@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+			http://www.springframework.org/schema/mvc
+			http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+    <!--配置包扫描-->
+    <context:component-scan base-package="com.java.*" />
+
+    <!--开启springmvc注解驱动-->
+    <mvc:annotation-driven />
+
+    <!--配置视图解析器:InternalResourceViewResolver-->
+    <bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--配置前缀-->
+        <property name="prefix" value="/pages/"></property>
+        <!--配置后缀-->
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+
+    <!-- 加载国际化资源文件 id=messageSource固定，程序记载配置文件是会优先查抄id为messageSource的bean （JSP中使用时 需要国际化操作，引用jstl）  -->
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename" value="i18n"></property><!-- 自动加载 i18n 开头的资源文件 -->
+    </bean>
+
+    <!--view-name会被视图解析器加上前缀,后缀(不经过controller，通过path配置的地址直接调转到view-name中的界面。注意：如果不配置sprinmvc开启注解驱动，则会是controller失效)-->
+    <mvc:view-controller path="test/success" view-name="front/success" ></mvc:view-controller>
+
+    <!--配置文件上传:CommonsMultipartResolver-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--配置默认编码-->
+        <property name="defaultEncoding" value="UTF-8"></property>
+        <!--配置所有文件的总上传大小 单位Byte字节 -1表示无限制-->
+        <property name="maxUploadSize" value="10485760"></property>
+    </bean>
+
+    <!-- 配置 springMVC 不拦截的静态资源 （注：加上<mvc:annotation-driven /> 否则只能访问静态资源，不能访问动态资源了）-->
+    <!-- css 下所有文件都映射到 /bootstrap/css/ (*: 只处理文件夹下一级; **: 文件夹下多级) -->
+    <!--location:指location指定的目录不要拦截，直接请求，这里指在根目录下的resources文件下的所有文件-->
+    <!--mapping:值在resources文件下的所有文件(**代表所有文件)-->
+    <mvc:resources mapping="/images/**" location="/images/" />
+    <!-- 表示上述配置的 css 文件不属 viewResolver 解析 ,请求直接交给tomcat默认的servlet处理（直接访问）-->
+    <mvc:default-servlet-handler/>
+
+<!--    &lt;!&ndash;配置自定义转换器                                  右下配置可省略&ndash;&gt;-->
+<!--    &lt;!&ndash;1.将自定义的转换器 纳入SpringIOC容器中&ndash;&gt;-->
+<!--    <bean id="myConverter" class="com.java.converter.MyConverter"></bean>-->
+<!--    &lt;!&ndash;2.将myConverter在纳入SpringMVC提供的转换器Bean&ndash;&gt;-->
+<!--    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">-->
+<!--        <property name="converters">-->
+<!--            <set>-->
+<!--                <ref bean="myConverter"></ref>-->
+<!--            </set>-->
+<!--        </property>-->
+<!--    </bean>-->
+<!--    &lt;!&ndash;3.将conversionService注册到annotation-driven中&ndash;&gt;-->
+<!--    <mvc:annotation-driven conversion-service="conversionService"></mvc:annotation-driven>-->
+
+    <!--配置 数据格式化 注解 所以来的bean (使用：通过注解直接使用 例如：Student中birthday属性)  该bean包含类型转换，因此可省略转换器-->
+    <bean id="formattingConversionServiceFactoryBean" class="org.springframework.format.support.FormattingConversionServiceFactoryBean"></bean>
+
+    <!--配置定时器任务(可以暂时不写)-->
+
+    <!--配置拦截器-->
+<!--    <mvc:interceptors>-->
+<!--        <mvc:interceptor>-->
+<!--            &lt;!&ndash;拦截路径&ndash;&gt;-->
+<!--            <mvc:mapping path="/testController/**"/>-->
+<!--            &lt;!&ndash;不拦截路径&ndash;&gt;-->
+<!--            <mvc:exclude-mapping path="/error/404"/>-->
+<!--            <bean class="com.java.filter.MyInterceptor"></bean>-->
+<!--        </mvc:interceptor>-->
+<!--    </mvc:interceptors>-->
+
+
+</beans>
